@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveri svoj AI-Q</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Lucide Icons as SVG components
+        const ChevronRight = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+        );
+
+        const Brain = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        );
+
+        const Lightbulb = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+        );
+
+        const Target = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+            </svg>
+        );
+
+        const Award = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        );
+
+        function AIQKviz() {
+            const [showIntro, setShowIntro] = useState(true);
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [answers, setAnswers] = useState({});
+            const [showResult, setShowResult] = useState(false);
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "Odabir alata",
+                    options: [
+                        { text: "Uglavnom koristim jedan LLM (npr. ChatGPT)", points: 1, key: 'a' },
+                        { text: "Koristim različite LLM i znam za koje specifične zadatke je svaki od njih najbolji", points: 2, key: 'b' },
+                        { text: "Koristim LLM-ove, ali i agentske alate/RAG modele i znam razliku između četbota i agenta.", points: 3, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Oslanjaš se na AI samo radi komfora. U redu je detaljno poznavati jedan AI model, ali propuštaš da istražiš potencijal veštačke inteligencije.",
+                        b: "Ovo je osnova za profesionalnu upotrebu AI. Imaš svest o tome da AI nije samo ChatGPT i umeš da iskoristiš nekoliko različitih alata kako bi učinio/la svoje poslovne procese efikasnijim.",
+                        c: "Razumeš osnove funkcionisanja veštačke inteligencije, procenjuješ i upoređuješ različite alate i koristiš ih u skladu sa kompleksnošću zadatka. Demonstriraš veštinu primene teorije u praksi."
+                    },
+                    quote: "Napredni korisnik koristi AI kao kutiju sa različitim alatima, od kojih bira najbolji, a ne kao švajcarski nož."
+                },
+                {
+                    id: 2,
+                    question: "Promptovanje",
+                    options: [
+                        { text: "U prompt uključim ulogu, kontekst i format za output.", points: 2, key: 'a' },
+                        { text: "Uglavnom koristim jednostavna pitanja i rešavam stvari kroz konverzaciju i iteracije.", points: 1, key: 'b' },
+                        { text: "Koristim tehnike poput CoT, few-shot learning ili metode autokorekcije da poboljšam pouzdanost.", points: 3, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Koristiš Role-Context-Task-Format strategiju. Ti strukturišeš i vodiš konverzaciju, što svedoči o tvojoj sposobnosti da sagledaš širu sliku i odabereš ključne informacije za izvođenje zadatka.",
+                        b: "Prepuštaš svoj proces razmišljanja veštačkoj inteligenciji i koristiš AI kao alat za pretragu. Ako ga koristiš kao Google, propuštaš njegov generativni potencijal.",
+                        c: "Razumeš kako AI \"rezonuje\". Deliš svoje promptove u sekvence prema logičkim koracima, čime demonstriraš svoju sposobnost da razložiš kompleksan proces na logičke celine."
+                    },
+                    quote: "Preciznost i struktura tvojih promptova je ogledalo tvojih kognitivnih sposobnosti."
+                },
+                {
+                    id: 3,
+                    question: "Provera i poverenje",
+                    options: [
+                        { text: "Dizajniram promptove tako da AI može da reflektuje i kritikuje sopstveni output.", points: 3, key: 'a' },
+                        { text: "Znam kako da smanjim verovatnoću halucinacija koristeći dostupne funkcije u alatima.", points: 2, key: 'b' },
+                        { text: "Uglavnom proveravam tačnost outputa (npr. proverim izvore), ali se često oslonim na rezultat.", points: 1, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Koristiš moć veštačke inteligencije da kritikuje samu sebe, što svedoči o tvojoj svesti za neophodnosti kritičkog mišljenja i posmatranja problema iz različitih perspektiva.",
+                        b: "Ovo je profesionalni standard. Razumeš rizike i primenjuješ osnovne mere kontrole. Ovo smanjuje mogućnost za greške, ali ne razvija sposobnost analize i kritičkog promišljanja.",
+                        c: "Dovodiš sebe u rizik od osnovne mane veštačke inteligencije: halucinacija. Delegiranje donošenja sudova i odluka može biti efikasno — dok ne prouzrokuje katastrofalne posledice."
+                    },
+                    quote: "Napredni korisnik razume da AI proizvodi samo verovatnoće, ne i datosti."
+                },
+                {
+                    id: 4,
+                    question: "Workflow",
+                    options: [
+                        { text: "Uglavnom koristim AI za zadatke poput sažimanja teksta ili pisanja novog teksta.", points: 1, key: 'a' },
+                        { text: "Koristim AI za celokupne faze projekta (npr. pravljenje marketing strategije i njenu analizu).", points: 2, key: 'b' },
+                        { text: "Koristim integracije i automatizacije, npr. povezivanje putem API ili programe poput Zapiera.", points: 3, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "AI je za tebe samo ubrzanje: štedi vreme na pojedinačnim zadacima, ali ne menja značajno način na koji sprovodiš procese.",
+                        b: "Uspešno koristiš integrisane funkcionalnosti, čime demonstriraš sposobnost da reorganizuješ proces i iskoristiš AI tamo gde je najefikasnije.",
+                        c: "Ideš izvan okvira četbot-interfejsa. Shvataš moć veštačke inteligencije i demonstriraš svoju sposobnost da je na inovativan način uprogramiraš u svoje poslovne procese ili integrišeš u softvere."
+                    },
+                    quote: "Prava produktivnost se krije u tome da nevidljivo utkamo AI u svoje procese, umesto da je koristimo kao eksterni alat."
+                },
+                {
+                    id: 5,
+                    question: "Rad sa dokumentima",
+                    options: [
+                        { text: "Uglavnom ubacujem dokument u čet i tražim od AI da pronađe informacije.", points: 1, key: 'a' },
+                        { text: "Koristim alate za pravljenje RAG baze podataka (npr. NotebookLM).", points: 3, key: 'b' },
+                        { text: "Koristim built-in opcije poput GPT-a, Gemova ili projekata.", points: 2, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Postaješ žrtva još jednog ograničenja veštačke inteligencije: veličine kontekst prozora. Nedostaje ti svest o tome da ubacivanje dokumenta u čet ne znači da će AI povući informacije iz njega.",
+                        b: "Razumeš principe pravljenja i korišćenja baze podataka i koristiš njene funkcionalnosti za sprovođenje zadataka koji zahtevaju obimniju bazu podataka, a ne samo jedan PDF fajl.",
+                        c: "Ideš korak dalje i razumeš na koji način da iskoristiš integrisane funkcionalnosti kako bi smanjio/la mogućnost halucinacija i povećao/la oslanjanje na tekst samog dokumenta."
+                    },
+                    quote: "Napredni korisnici koriste moć rezonovanja koju AI ima za rad sa jedinstvenim bazama podataka."
+                },
+                {
+                    id: 6,
+                    question: "Ograničenja",
+                    options: [
+                        { text: "AI dosledno greši u zadacima koji zahtevaju vlasničko znanje, korporativno usklađivanje ili istinsku stratešku dalekovidost koja nije bila obuhvaćena njenim podacima za obuku.", points: 3, key: 'a' },
+                        { text: "Znam da AI ne piše originalno, nedostaje mu jezička nijansiranost, i nema etički ni emotivni kontekst.", points: 2, key: 'b' },
+                        { text: "Svestan/a sam da AI daje generičke i ponekad pogrešne odgovore.", points: 1, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Definišeš ograničenja AI prema njenom pristupu podacima i korporativnoj strategiji, ne prema njenim tehničkim ograničenjima. Manipulišeš sistemom znajući da je AI moćan motor, ali da mi moramo doliti gorivo.",
+                        b: "Prepoznaješ nesposobnost veštačke inteligencije da simulira lična ljudska iskustva, istinsku kreativnost, ili da donosi dublje etičke sudove. Shvataš da zadatke koji zahtevaju empatiju i političku osetljivost treba prepustiti čoveku.",
+                        c: "Fokusiraš se na površne probleme poput halucinacija i netačnih informacija, bez daljeg analiziranja njihovih uzroka i strategija mitigacije."
+                    },
+                    quote: "Napredni korisnici znaju tačno koje zadatke treba da prepuste AI, a za koje je potrebno ljudsko rasuđivanje."
+                },
+                {
+                    id: 7,
+                    question: "Podaci i privatnost",
+                    options: [
+                        { text: "Uglavnom ubacim ono što mi je potrebno i radim sa tom bazom podataka, bez izmena.", points: 1, key: 'a' },
+                        { text: "Stalno se informišem o politikama privatnosti, koristim tehnike anonimizacije i znam kada treba da koristim lokalne modele.", points: 3, key: 'b' },
+                        { text: "Znam razliku između besplatnih i plaćenih verzija u pogledu politike privatnosti.", points: 2, key: 'c' }
+                    ],
+                    feedback: {
+                        a: "Treniraš AI modele na sopstvenim (ili tuđim) podacima bez velike svesti o tome koju vrstu podataka kompanija iza alata koristi i na koji način.",
+                        b: "Više se ne oslanjaš na javno dostupno znanje koje AI poseduje. Koristiš ga na siguran način i primenjuješ njegovu moć na zaštićenim setovima podataka, postižući konkurentnost na tržištu.",
+                        c: "Osnovno znanje o politikama privatnosti je obavezno u korporativnoj upotrebi AI. Razumeš da tvoji podaci ne treba da budu moneta kojom ćeš plaćati korišćenje AI modela."
+                    },
+                    quote: "Napredni korisnici znaju da su poverljive informacije jedina prednost koju AI ne može da replicira."
+                }
+            ];
+
+            const calculateScore = () => {
+                let total = 0;
+                Object.values(answers).forEach(answer => {
+                    total += answer.points;
+                });
+                return total;
+            };
+
+            const getResult = (score) => {
+                if (score >= 1 && score <= 10) {
+                    return {
+                        title: "AI-Radoznalac",
+                        icon: Lightbulb,
+                        color: "from-yellow-400 to-orange-500",
+                        description: "Ti si istraživač u oblasti veštačke inteligencije.\nKoristiš AI za uštedu vremena, ali ne uvek na najefikasniji način. Propuštaš njen pravi potencijal.",
+                        advice: "Fokusiraj se na proširivanju znanja o osnovnom funkcionisanju veštačke inteligencije, zatim na informisanje i testiranje nekoliko različitih alata, te njihovo poređenje, kao i na poboljšanje formulisanja prompta."
+                    };
+                } else if (score >= 11 && score <= 16) {
+                    return {
+                        title: "AI-Praktičar",
+                        icon: Target,
+                        color: "from-blue-400 to-indigo-500",
+                        description: "Ti si praktičar u oblasti veštačke inteligencije.\nUmeš da iskoristiš AI na efikasan način i proceniš u kojim oblastima ti njena upotreba može biti najkorisnija. Ovo je sasvim dovoljan nivo za pouzdano korišćenje veštačke inteligencije.",
+                        advice: "Ako želiš da poboljšaš svoje AI veštine, tvoj sledeći korak može biti promišljanje o tome na koji način možeš da iskoristiš integracije i automatizacije koje će preuzeti čitave delove nekog poslovnog procesa."
+                    };
+                } else {
+                    return {
+                        title: "AI-Arhitekta",
+                        icon: Award,
+                        color: "from-purple-400 to-pink-500",
+                        description: "Ti si arhitekta u oblasti veštačke inteligencije.\nNe koristiš veštačku inteligenciju samo za poboljšanje efikasnosti, već uz pomoć nje gradiš nove alate i reorganizuješ procese. Sposoban/a si da kreiraš strategiju upotrebe AI i za druge osobe.",
+                        advice: "Fokusiraj se na upravljanje AI alatima unutar svoje kompanije i na dizajniranje unutrašnje AI strategije. Budi glavni edukator u oblasti AI u svojoj kompaniji."
+                    };
+                }
+            };
+
+            const handleAnswer = (questionId, optionKey, points) => {
+                setAnswers({
+                    ...answers,
+                    [questionId]: { key: optionKey, points }
+                });
+            };
+
+            const currentQuestion = questions[Math.floor(currentSlide / 3)];
+            const slideType = currentSlide % 3;
+            const questionIndex = Math.floor(currentSlide / 3);
+            const isLastQuestion = questionIndex === questions.length - 1;
+
+            const IntroSlide = () => (
+                <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center p-6">
+                    <div className="max-w-3xl bg-white rounded-3xl shadow-2xl p-12 text-center">
+                        <div className="flex justify-center mb-6">
+                            <Brain className="w-20 h-20 text-purple-600" />
+                        </div>
+                        <h1 className="text-5xl font-bold text-gray-900 mb-6">
+                            Proveri svoj AI-Q
+                        </h1>
+                        <p className="text-2xl text-gray-700 mb-8">
+                            Šta način na koji koristiš AI govori o tvojoj inteligenciji?
+                        </p>
+                        <div className="text-left bg-gray-50 rounded-xl p-8 mb-8">
+                            <p className="text-lg text-gray-700 mb-4">
+                                Svaki dan koristiš veštačku inteligenciju – za posao, učenje, kreativnost. Ali način na koji to radiš otkriva mnogo više nego što misliš: tvoj pristup rešavanju problema, kritičko promišljanje, sposobnost rešavanja problema, pa čak i tvoju mentalnu fleksibilnost.
+                            </p>
+                            <p className="text-lg text-gray-700 mb-4">
+                                <strong>Evo istine:</strong> Oni koji pametno koriste AI postaju pametniji, dok oni koji mu slepo veruju gube ono što ih čini jedinstvenim.
+                            </p>
+                            <p className="text-lg text-gray-700 mb-4">
+                                <strong>Dobra vest?</strong> Ti biraš u koju grupu spadaš.
+                            </p>
+                            <p className="text-lg text-gray-700">
+                                Ovaj kviz nije još jedan onlajn test. Ovo je ogledalo koje pokazuje kako zapravo razmišljaš koristeći AI, i kako možeš da poboljšaš svoj "AI-Q".
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowIntro(false)}
+                            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-12 py-4 rounded-full text-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-3 mx-auto"
+                        >
+                            ZAPOČNI KVIZ
+                            <ChevronRight className="w-6 h-6" />
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const QuestionSlide = () => (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-6">
+                    <div className="max-w-4xl w-full bg-white rounded-3xl shadow-xl p-10">
+                        <div className="mb-8">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-purple-600 font-semibold text-lg">
+                                    Pitanje {questionIndex + 1} od {questions.length}
+                                </span>
+                                <div className="flex gap-2">
+                                    {questions.map((_, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`h-2 w-12 rounded-full ${
+                                                idx < questionIndex
+                                                    ? 'bg-purple-600'
+                                                    : idx === questionIndex
+                                                    ? 'bg-purple-400'
+                                                    : 'bg-gray-200'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <h2 className="text-4xl font-bold text-gray-900 mb-8">
+                                {currentQuestion.question}
+                            </h2>
+                        </div>
+
+                        <div className="space-y-4">
+                            {currentQuestion.options.map((option, idx) => {
+                                const isSelected = answers[currentQuestion.id]?.key === option.key;
+                                return (
+                                    <button
+                                        key={idx}
+                                        onClick={() => {
+                                            handleAnswer(currentQuestion.id, option.key, option.points);
+                                            setTimeout(() => setCurrentSlide(currentSlide + 1), 300);
+                                        }}
+                                        className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-200 ${
+                                            isSelected
+                                                ? 'border-purple-600 bg-purple-50'
+                                                : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                                        }`}
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <span className="text-2xl font-bold text-purple-600">
+                                                {String.fromCharCode(97 + idx)})
+                                            </span>
+                                            <p className="text-lg text-gray-800 flex-1">{option.text}</p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {currentSlide > 0 && (
+                            <button
+                                onClick={() => setCurrentSlide(currentSlide - 1)}
+                                className="mt-6 text-purple-600 hover:text-purple-800 font-semibold flex items-center gap-2"
+                            >
+                                <ChevronRight className="w-5 h-5 rotate-180" />
+                                Nazad
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+
+            const FeedbackSlide = () => {
+                const selectedAnswer = answers[currentQuestion.id];
+                const feedback = currentQuestion.feedback[selectedAnswer?.key];
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-6">
+                        <div className="max-w-3xl w-full bg-white rounded-3xl shadow-xl p-10">
+                            <div className="text-center mb-8">
+                                <div className="inline-block p-4 bg-purple-100 rounded-full mb-4">
+                                    <Brain className="w-12 h-12 text-purple-600" />
+                                </div>
+                                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                                    Tvoj odgovor
+                                </h2>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8 mb-8">
+                                <p className="text-xl text-gray-800 leading-relaxed">
+                                    {feedback}
+                                </p>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setCurrentSlide(currentSlide - 1)}
+                                    className="bg-gray-100 text-gray-700 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-200 transition-all duration-200 flex items-center gap-3"
+                                >
+                                    <ChevronRight className="w-5 h-5 rotate-180" />
+                                    Nazad
+                                </button>
+                                <button
+                                    onClick={() => setCurrentSlide(currentSlide + 1)}
+                                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-3"
+                                >
+                                    Nastavi
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const QuoteSlide = () => (
+                <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center p-6">
+                    <div className="max-w-3xl w-full">
+                        <div className="text-center text-white">
+                            <div className="text-8xl mb-8 opacity-50">"</div>
+                            <p className="text-3xl font-light leading-relaxed mb-12 italic">
+                                {currentQuestion.quote}
+                            </p>
+                            <div className="flex gap-4 justify-center">
+                                <button
+                                    onClick={() => setCurrentSlide(currentSlide - 1)}
+                                    className="bg-white/20 backdrop-blur text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/30 transition-all duration-200 flex items-center gap-3"
+                                >
+                                    <ChevronRight className="w-5 h-5 rotate-180" />
+                                    Nazad
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (isLastQuestion && slideType === 2) {
+                                            setShowResult(true);
+                                        } else {
+                                            setCurrentSlide(currentSlide + 1);
+                                        }
+                                    }}
+                                    className="bg-white text-purple-600 px-10 py-4 rounded-full text-lg font-semibold hover:shadow-2xl transform hover:scale-105 transition-all duration-200 flex items-center gap-3"
+                                >
+                                    {isLastQuestion && slideType === 2 ? 'Pogledaj rezultat' : 'Sledeće pitanje'}
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ResultSlide = () => {
+                const score = calculateScore();
+                const result = getResult(score);
+                const ResultIcon = result.icon;
+
+                return (
+                    <div className={`min-h-screen bg-gradient-to-br ${result.color} flex items-center justify-center p-6`}>
+                        <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl p-12">
+                            <div className="text-center mb-10">
+                                <div className="inline-block p-6 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mb-6">
+                                    <ResultIcon className="w-20 h-20 text-purple-600" />
+                                </div>
+                                <h1 className="text-5xl font-bold text-gray-900 mb-4">
+                                    {result.title}
+                                </h1>
+                                <div className="inline-block bg-gray-100 rounded-full px-6 py-2">
+                                    <span className="text-2xl font-semibold text-gray-700">
+                                        {score} / 21 poena
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 mb-10">
+                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8">
+                                    <p className="text-xl text-gray-800 leading-relaxed whitespace-pre-line">
+                                        {result.description}
+                                    </p>
+                                </div>
+
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                        Sledeći koraci:
+                                    </h3>
+                                    <p className="text-lg text-gray-800 leading-relaxed">
+                                        {result.advice}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-8 text-center">
+                                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                                    Ključne lekcije
+                                </h3>
+                                <div className="space-y-3 text-left">
+                                    <p className="text-lg text-gray-700">
+                                        <strong>•</strong> Veštačka inteligencija zahteva ljudsku inteligenciju i AI pismenost.
+                                    </p>
+                                    <p className="text-lg text-gray-700">
+                                        <strong>•</strong> Idi korak dalje od četbota. Prava moć AI je vidljiva tek kada naučiš da upotrebljavaš RAG baze, agentske strukture i automatizacije.
+                                    </p>
+                                    <p className="text-lg text-gray-700">
+                                        <strong>•</strong> AI-Q ↔ IQ: Što više razvijaš kritičko razmišljanje, to efikasnije možeš da koristiš AI.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    setShowIntro(true);
+                                    setCurrentSlide(0);
+                                    setAnswers({});
+                                    setShowResult(false);
+                                }}
+                                className="w-full mt-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200"
+                            >
+                                Ponovi kviz
+                            </button>
+                        </div>
+                    </div>
+                );
+            };
+
+            if (showResult) {
+                return <ResultSlide />;
+            }
+
+            if (showIntro) {
+                return <IntroSlide />;
+            }
+
+            if (slideType === 0) {
+                return <QuestionSlide />;
+            } else if (slideType === 1) {
+                return <FeedbackSlide />;
+            } else {
+                return <QuoteSlide />;
+            }
+        }
+
+        ReactDOM.render(<AIQKviz />, document.getElementById('root'));
+    </script>
+</body>
+</html>
